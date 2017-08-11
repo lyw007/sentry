@@ -1,3 +1,4 @@
+/* global module */
 import jQuery from 'jquery';
 
 import plugins from './plugins';
@@ -41,13 +42,25 @@ import moment from 'moment';
 import Raven from 'raven-js';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import * as Router from 'react-router';
 import {renderToStaticMarkup} from 'react-dom/server';
 import Reflux from 'reflux';
-import * as Router from 'react-router';
 import ReactBootstrapModal from 'react-bootstrap/lib/Modal';
 
 import * as api from './api';
 import * as il8n from './locale';
+
+let render = () => {
+  let rootEl = document.getElementById('blk_router');
+  const Main = require('./main').default;
+  ReactDOM.render(React.createElement(Main), rootEl);
+};
+
+if (module.hot) {
+  module.hot.accept('./main', function() {
+    setTimeout(render, 1);
+  });
+}
 
 export default {
   jQuery: jQuery,
@@ -66,10 +79,10 @@ export default {
   },
   Reflux: Reflux,
   Router: Router,
+  SentryRenderApp: render,
 
   Sentry: {
     api: api,
-    routes: require('./routes').default,
     forms: {
       // we dont yet export all form field classes as they're not
       // all needed by sentry.io
